@@ -16,10 +16,12 @@ class DatasourceFactory {
 
 	static function from_url($url) {
 		foreach (self::get_registered() as $className) {
-			$provider = "PeachSchnapps\Bandlands\Provider\\".$className;
-			$source = new $provider($url);
-			if ($source->is_valid()) {
-				return $source;
+			if (!is_numeric(stripos($className, 'Store'))) {
+				$provider = "PeachSchnapps\Bandlands\Provider\\".$className;
+				$source = new $provider($url);
+				if ($source->is_valid()) {
+					return $source;
+				}
 			}
 		}
 		return false;

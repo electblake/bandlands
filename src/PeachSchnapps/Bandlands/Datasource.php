@@ -3,7 +3,7 @@
 use Illuminate\Support\Contracts\JsonableInterface;
 use Illuminate\Support\Contracts\ArrayableInterface;
 
-class Datasource implements ArrayableInterface, JsonableInterface {
+class Datasource implements ArrayableInterface, JsonableInterface{
 
 	public $type = null;
 	public $url = null;
