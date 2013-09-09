@@ -1,0 +1,23 @@
+{
+    "name": "peach-schnapps/bandlands",
+    "description": "Discover great data from bands based on url.",
+    "authors": [
+        {
+            "name": "electblake",
+            "email": "electblake@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0",
+        "illuminate/support": "4.0.x"
+    },
+    "autoload": {
+        "classmap": [
+            "src/migrations",
+        ],
+        "psr-0": {
+            "PeachSchnapps\\Bandlands": "src/"
+        }
+    },
+    "minimum-stability": "dev"
+}
