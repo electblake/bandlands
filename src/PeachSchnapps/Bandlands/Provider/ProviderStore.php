@@ -10,9 +10,9 @@ class ProviderStore extends Eloquent {
 	protected $guarded = array();
 
 	static function boot() {
-		if (empty(self::$attributes['id'])) {
-			$attributes['id'] = Uuid::uuid1();
-		}
+		// if (empty(self::$attributes['id'])) {
+		// 	$attributes['id'] = Uuid::uuid1();
+		// }
 	}
 
 }

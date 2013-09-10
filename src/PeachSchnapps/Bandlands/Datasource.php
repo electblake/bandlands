@@ -16,6 +16,13 @@ class Datasource implements ArrayableInterface, JsonableInterface{
 	/**
 	 * Public
 	 */	
+	
+	public function stat($name) {
+		if ($value = $this->$name) {
+			return $value;
+		}
+		return 0;
+	}
 	public function is_valid() {
 		return $this->valid_url($this->url);
 	}
@@ -59,4 +66,29 @@ class Datasource implements ArrayableInterface, JsonableInterface{
 		}
 		return false;
 	}
+
+	  /**
+   * Adds support for $this->get_varname virtual properties
+   * (Implementation sort of mirrors what I originally grabbed from PHP ActiveRecord)
+   * 
+   * @param  string $name looks for $this->get_$name() to generate $this->name value
+   */
+  public function __get($name) {
+    $method = 'get'.studly_case($name.'Attribute');
+    if (method_exists($this, $method)) {
+      return call_user_func(array(&$this, $method));
+    }
+  }
+  /**
+   * Adds support for $this->set_varname to preprocess property settings
+   * (Implementation sort of mirrors what I originally grabbed from PHP ActiveRecord)
+   * 
+   * @param  string $name looks for $this->set_$name() to help set value
+   */
+  public function __set($name, $val) {
+    $method = 'set'.studly_case($name.'Attribute');
+    if (method_exists($this, $method)) {
+      return call_user_func(array(&$this, $method), $val);
+    }
+  }
 }
