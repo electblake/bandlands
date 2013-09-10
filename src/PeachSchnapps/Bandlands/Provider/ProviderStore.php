@@ -9,10 +9,4 @@ class ProviderStore extends Eloquent {
 	protected $table = 'band_provider_stores';
 	protected $guarded = array();
 
-	static function boot() {
-		// if (empty(self::$attributes['id'])) {
-		// 	$attributes['id'] = Uuid::uuid1();
-		// }
-	}
-
 }

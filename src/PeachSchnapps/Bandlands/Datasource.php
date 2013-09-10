@@ -8,6 +8,7 @@ class Datasource implements ArrayableInterface, JsonableInterface{
 	public $type = null;
 	public $url = null;
 	public $attributes = array();
+	public $site = null;
 
 	public function __construct($url) {
 		$this->url = $url;
