@@ -21,5 +21,8 @@
             "PeachSchnapps\\Bandlands": "src/"
         }
     },
-    "minimum-stability": "dev"
+    "minimum-stability": "dev",
+    "psr-0": {
+        
+    }
 }
