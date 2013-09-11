@@ -12,6 +12,7 @@
     ,   "illuminate/support": "4.0.x"
     ,   "boparaiamrit/facebook": "dev-master"
     ,   "rhumsaa/uuid": "~2.4"
+    ,   "marvelley/lastfm-api": ">=1.0" 
     },
     "autoload": {
         "classmap": [
@@ -24,5 +25,11 @@
     "minimum-stability": "dev",
     "psr-0": {
 
-    }
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "git@github.com:peach-schnapps/last-fm-api-client.git"
+        }
+    ]
 }
