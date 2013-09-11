@@ -33,36 +33,22 @@ class LastfmProvider extends Datasource {
 			case 'freshen':
 			default:
 				$code = -1;
-				// $message = "Last.fm Provider is Work in Progress";
+				$message = "Last.fm Provider is Work in Progress";
 				$query = $this->query;
-				// $provider = $this->provider;
-
-				// $page_info = FB::api($query);
-				// $result = json_encode($page_info);
-
-				// if (empty($provider->id)) {
-				// 	$provider = array(
-				// 		'id' => Uuid::uuid1(),
-				// 		'type' => $this->type,
-				// 		'query' => $query,
-				// 		'result' => $result,
-				// 		'refreshed_at' => Carbon::now()
-				// 	);
-
-				// 	$provider = new ProviderStore($provider);
-				// } else {
-				// 	$provider->result = $result;
-				// 	$provider->refreshed_at = Carbon::now();
-				// }
-
-				// if ($provider->save())
-				// {
-				// 	$code = 1;
-				// 	$message = 'Success!';
-				// } else {
-				// 	$code = -100;
-				// 	$message = 'Problem saving '.json_encode($provider);
-				// }
+				$l = LFM::factory(array('api_key' => 'f3a319713ea75695de8792b645820977'));
+				$result = $l->getCommand('artist.getInfo', array(
+				    'artist' => $this->query, 
+				    "format" => "json"
+				));
+				$result = json_decode($result);
+				if ($this->update_data($result))
+				{
+					$code = 1;
+					$message = 'Success!';
+				} else {
+					$code = -100;
+					$message = 'Problem saving '.json_encode($provider);
+				}
 
 			break;
 		}
