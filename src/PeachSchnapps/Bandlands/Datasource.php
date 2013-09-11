@@ -1,31 +1,64 @@
 <?php namespace PeachSchnapps\Bandlands;
 
+use Carbon\Carbon;
+use Rhumsaa\Uuid\Uuid;
+use Rhumsaa\Uuid\Exception\UnsatisfiedDependencyException;
+use PeachSchnapps\Bandlands\Provider\ProviderStore;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Contracts\JsonableInterface;
 use Illuminate\Support\Contracts\ArrayableInterface;
 
 class Datasource implements ArrayableInterface, JsonableInterface{
 
 	public $type = null;
-	public $url = null;
+	public $hosts = array();
 	public $attributes = array();
+	public $url = null;
 	public $site = null;
+	public $channel = false;
 
 	public function __construct($url) {
 		$this->url = $url;
 	}
 
+	public function getProviderAttribute() {
+		return ProviderStore::where('type', $this->type)->where('query', json_encode($this->query))->first();
+	}
+
+	public function getDataAttribute() {
+		$provider = $this->provider;
+		if (!empty($provider)) {
+			return json_decode($provider->result);
+		}
+		return false;
+	}
+
 	/**
 	 * Public
 	 */	
-	
-	public function stat($name) {
-		if ($value = $this->$name) {
-			return $value;
+
+	public function update_data($result) {
+		$provider = $this->provider;
+
+		if (empty($provider->id)) {
+			$provider = array(
+				'id' => Uuid::uuid1(),
+				'type' => $this->type,
+				'query' => json_encode($this->query),
+				'result' => json_encode($result),
+				'refreshed_at' => Carbon::now()
+			);
+			$provider = new ProviderStore($provider);
+		} else {
+			$provider->result = json_encode($result);
+			$provider->refreshed_at = Carbon::now();
 		}
-		return 0;
+		return $provider->save();
 	}
+
 	public function is_valid() {
-		return $this->valid_url($this->url);
+		return $this->validate_url($this->url);
 	}
 
 	public function discover_url($url){}
@@ -51,19 +84,17 @@ class Datasource implements ArrayableInterface, JsonableInterface{
 	}
 
 	/**
-	 * Privates
-	 */
-
-	/**
 	 * Accept a url and parse whether
 	 * @param  [type] $url [description]
 	 * @return [type]      [description]
 	 */
-	private function valid_url($url) {
+	public function validate_url($url) {
 		$url = parse_url($url);
-		$host = $url['host'];
-		if (stripos($host, $this->type)) {
-			return true;
+		$url_host = $url['host'];
+		foreach ($this->hosts as $host) {
+			if (stripos($url_host, $host)) {
+				return true;
+			}
 		}
 		return false;
 	}

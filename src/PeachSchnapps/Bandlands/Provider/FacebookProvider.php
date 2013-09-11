@@ -1,17 +1,17 @@
 <?php namespace PeachSchnapps\Bandlands\Provider;
 
-use Carbon\Carbon;
-use Rhumsaa\Uuid\Uuid;
-use Rhumsaa\Uuid\Exception\UnsatisfiedDependencyException;
 use Boparaiamrit\Facebook\FacebookFacade as FB;
-use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Cache;
-class FacebookProvider extends \PeachSchnapps\Bandlands\Datasource {
+use PeachSchnapps\Bandlands\Datasource;
+
+class FacebookProvider extends Datasource {
 	public $type = 'facebook';
-	public $channel = false;
+	public $hosts = array('facebook.com');
 
 	public function getFansAttribute() {
-		return $this->data->likes;
+		if (is_object($this->data)) {
+			return $this->data->likes;
+		}
+		return 0;
 	}
 
 	public function getListenersAttribute() {
@@ -20,13 +20,6 @@ class FacebookProvider extends \PeachSchnapps\Bandlands\Datasource {
 
 	public function getQueryAttribute() {
 		return $this->username;
-	}
-
-	public function getProviderAttribute() {
-		return ProviderStore::where('type', $this->type)->where('query', $this->query)->first();
-	}
-	public function getDataAttribute() {
-		return json_decode($this->provider->result);
 	}
 
 	public function getUsernameAttribute() {
@@ -42,27 +35,8 @@ class FacebookProvider extends \PeachSchnapps\Bandlands\Datasource {
 			case 'freshen':
 			default:
 				$query = $this->query;
-				$provider = $this->provider;
-
-				$page_info = FB::api($query);
-				$result = json_encode($page_info);
-
-				if (empty($provider->id)) {
-					$provider = array(
-						'id' => Uuid::uuid1(),
-						'type' => $this->type,
-						'query' => $query,
-						'result' => $result,
-						'refreshed_at' => Carbon::now()
-					);
-
-					$provider = new ProviderStore($provider);
-				} else {
-					$provider->result = $result;
-					$provider->refreshed_at = Carbon::now();
-				}
-
-				if ($provider->save())
+				$result = FB::api($query);
+				if ($this->update_data($result))
 				{
 					$code = 1;
 					$message = 'Success!';
